@@ -5,9 +5,11 @@ import (
 	"math"
 )
 
-var ErrDimMismatch = errors.New("vector: dimension mismatch")
+var (
+	ErrDimMismatch = errors.New("vector: dimension mismatch")
+	ErrZeroVector  = errors.New("vector: zero vector")
+)
 
-// Cosine devuelve la similitud coseno entre a y b.
 func Cosine(a, b []float32) (float32, error) {
 	if len(a) != len(b) {
 		return 0, ErrDimMismatch
@@ -15,10 +17,17 @@ func Cosine(a, b []float32) (float32, error) {
 
 	var dot, normA, normB float64
 	for i := range a {
-		// TODO: acumular dot, normA y normB
-		// pista: convierte con float64(a[i])
+		x := float64(a[i])
+		y := float64(b[i])
+		dot += x * y
+		normA += x * x
+		normB += y * y
 	}
 
-	// TODO: decidir qué pasa si normA o normB es 0
-	// TODO: devolver dot / (math.Sqrt(normA) * math.Sqrt(normB)) convertido a float32
+	if normA == 0 || normB == 0 {
+		return 0, ErrZeroVector
+	}
+
+	result := dot / (math.Sqrt(normA) * math.Sqrt(normB))
+	return float32(result), nil
 }
