@@ -24,3 +24,40 @@ func TestBruteForceAdd(t *testing.T) {
 		t.Fatalf("Add returned unexpected error: %v", err)
 	}
 }
+
+func TestBruteForceSearch(t *testing.T) {
+	idx := NewBruteForce(2)
+
+	if err := idx.Add("a", []float32{1, 0}); err != nil {
+		t.Fatalf("Add a: %v", err)
+	}
+	if err := idx.Add("b", []float32{0, 1}); err != nil {
+		t.Fatalf("Add b: %v", err)
+	}
+	if err := idx.Add("c", []float32{1, 1}); err != nil {
+		t.Fatalf("Add c: %v", err)
+	}
+
+	got, err := idx.Search([]float32{1, 0}, 2)
+	if err != nil {
+		t.Fatalf("Search returned error: %v", err)
+	}
+
+	// TODO 1: comprobar que len(got) es 2
+
+	if len(got) == 2 {
+
+	}
+
+	// TODO 2: comprobar que got[0].ID es "a"
+
+	if got[0].ID == "a" {
+		
+	}
+
+	// TODO 3: comprobar que got[1].ID es "c"
+
+		if got[1].ID == "c" {
+		
+	}
+}
