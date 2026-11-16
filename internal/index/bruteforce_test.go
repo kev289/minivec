@@ -52,6 +52,6 @@ func TestBruteForceSearch(t *testing.T) {
 	}
 
 	if got[1].ID != "c" {
-	t.Errorf("got[1].ID = %q, want c", got[1].ID)
+		t.Errorf("got[1].ID = %q, want c", got[1].ID)
 	}
 }
