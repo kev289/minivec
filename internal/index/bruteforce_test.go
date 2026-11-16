@@ -43,21 +43,15 @@ func TestBruteForceSearch(t *testing.T) {
 		t.Fatalf("Search returned error: %v", err)
 	}
 
-	// TODO 1: comprobar que len(got) es 2
-
-	if len(got) == 2 {
-
+	if len(got) != 2 {
+		t.Fatalf("len(got) = %d, want 2", len(got))
 	}
 
-	// TODO 2: comprobar que got[0].ID es "a"
-
-	if got[0].ID == "a" {
-		
+	if got[0].ID != "a" {
+		t.Errorf("got[0].ID = %q, want a", got[0].ID)
 	}
 
-	// TODO 3: comprobar que got[1].ID es "c"
-
-		if got[1].ID == "c" {
-		
+	if got[1].ID != "c" {
+	t.Errorf("got[1].ID = %q, want c", got[1].ID)
 	}
 }
