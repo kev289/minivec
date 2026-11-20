@@ -2,6 +2,8 @@ package index
 
 import (
 	"sort"
+	"runtime"
+	"sync"
 
 	"github.com/kev289/minivec/internal/vector"
 )
@@ -52,15 +54,41 @@ func (b *BruteForce) Search(query []float32, k int) ([]Result, error) {
 		return nil, vector.ErrDimMismatch
 	}
 
-	results := make([]Result, 0, len(b.entries))
-	for _, e := range b.entries {
-		score, err := vector.Cosine(query, e.vec)
-		if err != nil {
+	n := len(b.entries)
+	results := make([]Result, n)
+
+	workers := runtime.NumCPU()
+	chunk := (n + workers - 1) / workers
+	errs := make([]error, workers)
+
+	var wg sync.WaitGroup
+	for w := 0; w < workers; w++ {
+		start := w * chunk
+		end := min(start+chunk, n)
+		if start >= end {
+			break
+		}
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := start; i < end;  i ++ {
+				score, err := vector.Cosine(query, b.entries[i].vec)
+			if err != nil {
+				errs[w] = err
+				return 
+			}
+			results[i] = Result{ID: b.entries[i].id, Score: score }
+			}
+		}()
+	}
+	wg.Wait()
+
+	for _, err :=  range errs {
+		if err != nil{
 			return nil, err
 		}
-		results = append(results, Result{ID: e.id, Score: score})
 	}
-
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Score > results[j].Score
 	})
@@ -68,6 +96,5 @@ func (b *BruteForce) Search(query []float32, k int) ([]Result, error) {
 	if k < len(results) {
 		results = results[:k]
 	}
-
-	return results, nil
+	return results, nil	
 }
