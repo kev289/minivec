@@ -1,0 +1,4 @@
+# generados por go test (-cpuprofile, -memprofile, binarios de test)
+*.test
+*.out
+*.prof
