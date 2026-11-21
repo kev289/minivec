@@ -1,8 +1,9 @@
 package index
 
 import (
-	"sort"
+	"cmp"
 	"runtime"
+	"slices"
 	"sync"
 
 	"github.com/kev289/minivec/internal/vector"
@@ -72,29 +73,30 @@ func (b *BruteForce) Search(query []float32, k int) ([]Result, error) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for i := start; i < end;  i ++ {
+			for i := start; i < end; i++ {
 				score, err := vector.Cosine(query, b.entries[i].vec)
-			if err != nil {
-				errs[w] = err
-				return 
-			}
-			results[i] = Result{ID: b.entries[i].id, Score: score }
+				if err != nil {
+					errs[w] = err
+					return
+				}
+				results[i] = Result{ID: b.entries[i].id, Score: score}
 			}
 		}()
 	}
 	wg.Wait()
 
-	for _, err :=  range errs {
-		if err != nil{
+	for _, err := range errs {
+		if err != nil {
 			return nil, err
 		}
 	}
-	sort.Slice(results, func(i, j int) bool {
-		return results[i].Score > results[j].Score
+
+	slices.SortFunc(results, func(a, b Result) int {
+		return cmp.Compare(b.Score, a.Score)
 	})
 
 	if k < len(results) {
 		results = results[:k]
 	}
-	return results, nil	
+	return results, nil
 }
