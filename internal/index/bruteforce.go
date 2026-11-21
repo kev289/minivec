@@ -91,6 +91,8 @@ func (b *BruteForce) Search(query []float32, k int) ([]Result, error) {
 		}
 	}
 
+	// El sort es lo lento, no las goroutines: ~1,15 ms de 1,42 ms (10k vec, dim 128).
+	// Sin sort son ~0,28 ms y con 16 hilos no mejora. Falta probar top-k con heap.
 	slices.SortFunc(results, func(a, b Result) int {
 		return cmp.Compare(b.Score, a.Score)
 	})
